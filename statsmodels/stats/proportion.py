@@ -620,7 +620,7 @@ def multinomial_proportions_confint(counts, alpha=0.05, method="goodman"):
 
 def samplesize_confint_proportion(proportion, half_length, alpha=0.05, method="normal"):
     """
-    Find sample size to get desired confidence interval length
+    Find sample size for a normal-approximation margin of error
 
     Parameters
     ----------
@@ -641,10 +641,10 @@ def samplesize_confint_proportion(proportion, half_length, alpha=0.05, method="n
     Returns
     -------
     n : float, ndarray, Series or DataFrame
-        Sample size to get the desired half length of the confidence
-        interval. The sample size is not rounded to an integer, and it is 0
-        if ``proportion`` is 0 or 1. The result is a float if all arguments
-        are scalars, and an ndarray if the arguments are array_like. It is a
+        Sample size from the normal-approximation margin-of-error formula.
+        The sample size is not rounded to an integer, and it is 0 if
+        ``proportion`` is 0 or 1. The result is a float if all arguments are
+        scalars, and an ndarray if the arguments are array_like. It is a
         pandas Series or DataFrame if ``proportion`` or ``half_length`` is
         one, in which case the result has the index of that argument.
 
@@ -662,10 +662,16 @@ def samplesize_confint_proportion(proportion, half_length, alpha=0.05, method="n
 
     Notes
     -----
-    This is mainly to store the formula. For the normal approximation the
-    sample size is ``proportion * (1 - proportion) / (half_length / z) ** 2``,
-    where ``z`` is the ``1 - alpha / 2`` quantile of the standard normal
-    distribution.
+    For the normal approximation, this returns the sample size obtained by
+    solving the margin-of-error equation
+    ``n = proportion * (1 - proportion) / (half_length / z) ** 2``, where
+    ``z`` is the ``1 - alpha / 2`` quantile of the standard normal
+    distribution. For an interior planning value ``p0 = proportion`` and
+    ``d = half_length``, if the true proportion is ``p0``, then
+    ``Pr(|p_hat - p0| <= d)`` is approximately ``1 - alpha``. This describes
+    the sampling error of the point estimate at the planning value; it does
+    not guarantee any property of the realized confidence interval, whose
+    width depends on the observed proportion.
 
     A possible application is the number of replications in bootstrap
     samples.
